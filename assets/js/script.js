@@ -1,6 +1,179 @@
 'use strict';
 
+// Animation utilities
+const animateOnScroll = () => {
+  const elements = document.querySelectorAll('.animate-on-scroll');
+  const windowHeight = window.innerHeight;
+  
+  elements.forEach(element => {
+    const elementTop = element.getBoundingClientRect().top;
+    const elementVisible = 150;
+    
+    if (elementTop < windowHeight - elementVisible) {
+      element.classList.add('animated');
+    }
+  });
+};
 
+// Skill progress animation
+const animateSkills = () => {
+  const skillBars = document.querySelectorAll('.skill-progress-fill');
+  const skillsSection = document.querySelector('.skill');
+  
+  if (!skillsSection) return;
+  
+  const skillsTop = skillsSection.getBoundingClientRect().top;
+  const windowHeight = window.innerHeight;
+  
+  if (skillsTop < windowHeight - 100) {
+    skillBars.forEach(bar => {
+      const width = bar.parentElement.querySelector('data').value;
+      bar.style.setProperty('--skill-width', width + '%');
+      bar.classList.add('animate');
+    });
+  }
+};
+
+// Parallax effect for avatar
+const parallaxEffect = () => {
+  const avatar = document.querySelector('.avatar-box');
+  if (!avatar) return;
+  
+  const scrolled = window.pageYOffset;
+  const rate = scrolled * -0.5;
+  avatar.style.transform = `translateY(${rate}px)`;
+};
+
+// Smooth scroll for navigation
+const smoothScroll = (target) => {
+  const element = document.querySelector(target);
+  if (element) {
+    element.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+};
+
+// Typing animation for name
+const typeWriter = (element, text, speed = 100) => {
+  let i = 0;
+  element.innerHTML = '';
+  
+  const timer = setInterval(() => {
+    if (i < text.length) {
+      element.innerHTML += text.charAt(i);
+      i++;
+    } else {
+      clearInterval(timer);
+    }
+  }, speed);
+};
+
+// Loading screen functionality
+const hideLoadingScreen = () => {
+  const loadingScreen = document.getElementById('loading-screen');
+  if (loadingScreen) {
+    setTimeout(() => {
+      loadingScreen.classList.add('fade-out');
+      setTimeout(() => {
+        loadingScreen.style.display = 'none';
+      }, 500);
+    }, 1500);
+  }
+};
+
+// Initialize animations when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+  // Hide loading screen
+  hideLoadingScreen();
+  
+  // Add scroll event listeners
+  window.addEventListener('scroll', () => {
+    animateOnScroll();
+    animateSkills();
+    parallaxEffect();
+  });
+  
+  // Initial animation check
+  animateOnScroll();
+  animateSkills();
+  
+  // Add typing effect to name
+  const nameElement = document.querySelector('.name');
+  if (nameElement) {
+    const originalName = nameElement.textContent;
+    setTimeout(() => {
+      typeWriter(nameElement, originalName, 150);
+    }, 2000);
+  }
+  
+  // Add hover effects to service items
+  const serviceItems = document.querySelectorAll('.service-item');
+  serviceItems.forEach((item, index) => {
+    item.style.animationDelay = `${index * 0.1}s`;
+    item.classList.add('animate-on-scroll');
+  });
+  
+  
+  // Add hover effects to project items
+  const projectItems = document.querySelectorAll('.project-item');
+  projectItems.forEach((item, index) => {
+    item.style.animationDelay = `${index * 0.1}s`;
+  });
+  
+  // Add floating animation to social icons
+  const socialIcons = document.querySelectorAll('.social-link');
+  socialIcons.forEach((icon, index) => {
+    icon.style.animationDelay = `${index * 0.2}s`;
+    icon.addEventListener('mouseenter', () => {
+      icon.style.animation = 'bounce 0.6s ease-in-out';
+    });
+    icon.addEventListener('animationend', () => {
+      icon.style.animation = '';
+    });
+  });
+  
+  // Add click ripple effect to buttons
+  const buttons = document.querySelectorAll('button, .form-btn');
+  buttons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      const ripple = document.createElement('span');
+      const rect = this.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      const x = e.clientX - rect.left - size / 2;
+      const y = e.clientY - rect.top - size / 2;
+      
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = x + 'px';
+      ripple.style.top = y + 'px';
+      ripple.classList.add('ripple');
+      
+      this.appendChild(ripple);
+      
+      setTimeout(() => {
+        ripple.remove();
+      }, 600);
+    });
+  });
+  
+  // Add smooth scroll to navigation links
+  const navLinks = document.querySelectorAll('[data-nav-link]');
+  navLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const targetPage = link.textContent.toLowerCase();
+      const targetElement = document.querySelector(`[data-page="${targetPage}"]`);
+      
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    });
+  });
+});
 
 // element toggle function
 const elementToggleFunc = function (elem) { elem.classList.toggle("active"); }
